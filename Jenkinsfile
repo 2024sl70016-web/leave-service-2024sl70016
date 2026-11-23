@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com'
+                git branch: 'main', url: 'https://github.com/2024sl70016-web/leave-service-2024sl70016'
             }
         }
         stage('Build and Test') {
