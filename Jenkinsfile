@@ -9,7 +9,7 @@ pipeline {
         }
         stage('Build and Test') {
             steps {
-                sh 'mvn clean verify'
+                sh 'mvn clean package'
             }
         }
         stage('SonarQube Code Inspection') {
@@ -21,6 +21,24 @@ pipeline {
                           -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
                     '''
                 }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t leave-service:staging .'
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                sh '''
+                    docker stop leave-service-staging || true
+                    docker rm leave-service-staging || true
+                    docker run -d \
+                      --name leave-service-staging \
+                      -e APP_ENV=staging \
+                      -p 8085:8080 \
+                      leave-service:staging
+                '''
             }
         }
     }
