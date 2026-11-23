@@ -11,7 +11,10 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonar.projectKey>leave-service-2024sl70016</sonar.projectKey>
+        <sonar.projectName>leave-service-2024sl70016</sonar.projectName>
+        <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
     </properties>
 
     <dependencies>
@@ -24,6 +27,28 @@
     </dependencies>
 
     <build>
-        <finalName>leave-service</finalName>
+	    <finalName>leave-service</finalName>
+	    <plugins>
+		    <plugin>
+   		   	 <groupId>org.jacoco</groupId>
+   			 <artifactId>jacoco-maven-plugin</artifactId>
+   			 <version>0.8.12</version>
+  			 <executions>
+       				 <execution>
+           				 <id>prepare-agent</id>
+           				 <goals>
+               					 <goal>prepare-agent</goal>
+           				 </goals>
+       				 </execution>
+       				 <execution>
+           				 <id>report</id>
+            		       		 <phase>test</phase>
+           				 <goals>
+                				<goal>report</goal>
+           				 </goals>
+       				 </execution>
+   			 </executions>
+		    </plugin>
+
     </build>
 </project>
