@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_TAG = "leave-service:v1.0"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -25,20 +29,38 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t leave-service:staging .'
+                sh "docker build -t ${IMAGE_TAG} ."
             }
         }
         stage('Deploy to Staging') {
             steps {
-                sh '''
+                sh """
                     docker stop leave-service-staging || true
                     docker rm leave-service-staging || true
                     docker run -d \
                       --name leave-service-staging \
                       -e APP_ENV=staging \
                       -p 8085:8080 \
-                      leave-service:staging
-                '''
+                      ${IMAGE_TAG}
+                """
+            }
+        }
+        stage('Approval') {
+            steps {
+                input message: 'Staging deployment verified. Approve deployment to Production?', ok: 'Deploy to Production'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                sh """
+                    docker stop leave-service-production || true
+                    docker rm leave-service-production || true
+                    docker run -d \
+                      --name leave-service-production \
+                      -e APP_ENV=production \
+                      -p 8086:8080 \
+                      ${IMAGE_TAG}
+                """
             }
         }
     }
